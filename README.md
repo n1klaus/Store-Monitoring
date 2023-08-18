@@ -21,7 +21,7 @@ python3 -m virtualenv .venv -p /usr/bin/python3.11
 curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 
 # install necessary python packages
-pip install -r requirements.txt 
+pip install -r requirements.txt
 ```
 
 ## Starting the app

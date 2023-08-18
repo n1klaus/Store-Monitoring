@@ -1,15 +1,17 @@
 #!/usr/bin/python3
+from datetime import datetime
+from datetime import time
+from datetime import timezone
+from enum import Enum
+from typing import List
 
 from pydantic import BaseModel
-from sqlalchemy.dialects.postgresql import TIMESTAMP, TIME, ENUM, INTEGER, BOOLEAN
-from sqlalchemy import DateTime
-from datetime import datetime, timezone, time
-from typing import List
-from enum import Enum
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 
 class StoreView(BaseModel):
     """Schema for viewing store"""
+
     store_id: int
     timestamp_utc: TIMESTAMP
     timezone: timezone

@@ -1,11 +1,12 @@
 #!/usr/bin/python3
+from datetime import time
 
 from pydantic import BaseModel
-from typing import Optional
-from datetime import time
+
 
 class ReportView(BaseModel):
     """Schema for viewing report"""
+
     store_id: int
     uptime_last_hour: time
     uptime_last_day: time

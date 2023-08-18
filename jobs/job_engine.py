@@ -1,24 +1,29 @@
 #!/usr/bin/python3
+from pathlib import Path
 
 from celery import Celery
+
 from core.settings import get_settings
-from utils.csv_handler import CSVHandler
 from models.store import Store
-from pathlib import Path
+from utils.csv_handler import CSVHandler
 
 settings = get_settings()
 
-OUTPUT_PATH = Path('../output/')
+OUTPUT_PATH = Path("../output/")
 
-CELERY_RESULT_BACKEND = 'db+' + settings.DATABASE_URL
+CELERY_RESULT_BACKEND = "db+" + settings.DATABASE_URL
 
-celery = Celery('tasks', broker=settings.CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
+celery = Celery(
+    "tasks", broker=settings.CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND
+)
+
 
 @celery.task(bind=True)
 def generate_report_task(self, report_id):
     print("here!!")
     try:
         from db import db
+
         session = next(db.session)
 
         # Fetch the required data from the database using SQLAlchemy
@@ -37,7 +42,7 @@ def generate_report_task(self, report_id):
     except Exception as e:
         # Handle any exceptions that might occur during report generation
         print("Error found", e)
-        self.update_state(state='FAILURE', meta={'error_message': str(e)})
+        self.update_state(state="FAILURE", meta={"error_message": str(e)})
         raise
     finally:
         session.close()
