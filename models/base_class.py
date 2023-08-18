@@ -5,20 +5,25 @@
 from copy import deepcopy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, DateTime, Enum, Sequence
+from sqlalchemy.orm import as_declarative, declared_attr
 from sqlalchemy.sql import func
 import enum
 
-
-Base = declarative_base()
 
 class SystemStatus(enum.Enum):
     """Base model status enum"""
     active = "Active"
     inactive = "Inactive"
 
-class BaseModel(Base):
-    """Base Model"""
+@as_declarative()
+class Base:
+    """Base Class"""
     __abstract__ = True
+
+    @declared_attr.directive
+    def __tablename__(cls) -> str:
+        return f"{cls.__name__.lower()}s"
+    
     id = Column(Integer, Sequence(name='base_id'), primary_key=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, default=func.now())

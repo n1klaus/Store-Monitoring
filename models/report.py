@@ -2,19 +2,15 @@
 
 """Report Class Module"""
 
-from datetime import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Time, Enum, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 import enum
 from uuid import uuid4
-from models.base_model import BaseModel
-from utils.settings import get_settings
+from models.base_class import Base
+from core.settings import get_settings
 
 settings = get_settings()
-
-CURRENT_TIME = datetime.utcnow()
-CURRENT_TIMESTAMP = datetime.timestamp(CURRENT_TIME)
 
 class ReportStatus(enum.Enum):
     """Report status enum"""
@@ -24,7 +20,7 @@ class ReportStatus(enum.Enum):
     started = "Started"
     not_started = "Not Started Yet"
 
-class Report(BaseModel):
+class Report(Base):
     """Report Model"""
     __tablename__ = 'reports'
 
