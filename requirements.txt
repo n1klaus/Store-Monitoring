@@ -1,0 +1,12 @@
+black==23.7.0
+celery==5.3.1
+fastapi==0.101.1
+flake8==6.1.0
+pre-commit==3.3.3
+psycopg2-binary==2.9.7
+pydantic-settings==2.0.3
+pytz==2023.3
+redis==5.0.0
+SQLAlchemy==2.0.20
+uvicorn==0.23.2
+virtualenv==20.24.3

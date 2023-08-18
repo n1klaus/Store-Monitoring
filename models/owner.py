@@ -1,14 +1,18 @@
 #!/usr/bin/python3
-
 """Owner Class Module"""
-
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
+
 from models.base_class import Base
+
 
 class Owner(Base):
     """Owner Model"""
-    __tablename__ = 'owners'
+
+    __tablename__ = "owners"
 
     owner_id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     name = Column(String, nullable=False)

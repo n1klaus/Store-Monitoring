@@ -1,19 +1,18 @@
 #!/usr/bin/python3
+from typing import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.exc import SQLAlchemyError
-from models.base_class import Base
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
+
 from core.settings import get_settings
-from typing import Generator
+from models.base_class import Base
 
 settings = get_settings()
 
-SESSION_OPTIONS = {
-    "autocommit": False, 
-    'autoflush': False,
-    'expire_on_commit': False
-}
+SESSION_OPTIONS = {"autocommit": False, "autoflush": False, "expire_on_commit": False}
+
 
 class DBEngine:
     """Database Class"""
@@ -31,17 +30,17 @@ class DBEngine:
         session: scoped_session = self.Session()
         try:
             yield session
-        finally: 
+        finally:
             session.close()
 
     def reload(self) -> None:
         """Creates new tables"""
-        try: 
+        try:
             Base.metadata.create_all(bind=self.engine)
             print("Database tables created.")
         except SQLAlchemyError as e:
             print(f"Error creating database tables: {str(e)}")
-            
+
     def drop_tables(self) -> None:
         """Drops all tables"""
         try:
@@ -55,7 +54,7 @@ class DBEngine:
         session = next(self.session)
         session.add(obj)
         session.commit()
-    
+
     def delete(self, obj: Base):
         """Saves an instance to the database"""
         session = next(self.session)
@@ -66,6 +65,3 @@ class DBEngine:
         """Returns object count in the database"""
         session = next(self.session)
         return session.query(obj).count()
-
-
-
