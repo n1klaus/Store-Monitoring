@@ -4,9 +4,9 @@
 
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
-from models.base_model import BaseModel
+from models.base_class import Base
 
-class Owner(BaseModel):
+class Owner(Base):
     """Owner Model"""
     __tablename__ = 'owners'
 

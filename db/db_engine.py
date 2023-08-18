@@ -3,15 +3,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.exc import SQLAlchemyError
-from models.base_model import Base, BaseModel
-from utils.settings import get_settings
+from models.base_class import Base
+from core.settings import get_settings
 from typing import Generator
 
 settings = get_settings()
-
-DATABASE_URL = 'postgresql+psycopg2://{0}:{1}@{2}:5432/{3}'.\
-                    format(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_NAME)
-
 
 SESSION_OPTIONS = {
     "autocommit": False, 
@@ -22,7 +18,7 @@ SESSION_OPTIONS = {
 class DBEngine:
     """Database Class"""
 
-    def __init__(self, db_url=DATABASE_URL):
+    def __init__(self, db_url=settings.DATABASE_URL):
         """Instantiates new database instance"""
         self.engine = create_engine(db_url, echo=settings.DEBUG_MODE)
         self.Session = scoped_session(sessionmaker(bind=self.engine, **SESSION_OPTIONS))
@@ -54,19 +50,19 @@ class DBEngine:
         except SQLAlchemyError as e:
             print(f"Error dropping database tables: {str(e)}")
 
-    def save(self, obj: BaseModel):
+    def save(self, obj: Base):
         """Saves an instance to the database"""
         session = next(self.session)
         session.add(obj)
         session.commit()
     
-    def delete(self, obj: BaseModel):
+    def delete(self, obj: Base):
         """Saves an instance to the database"""
         session = next(self.session)
         session.delete(obj)
         session.commit()
-    
-    def count(self, obj: BaseModel):
+
+    def count(self, obj: Base):
         """Returns object count in the database"""
         session = next(self.session)
         return session.query(obj).count()
