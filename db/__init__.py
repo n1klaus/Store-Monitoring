@@ -2,5 +2,5 @@
 
 from db.db_engine import DBEngine
 
-db = DBEngine()
+db: DBEngine = DBEngine()
 db.reload()

@@ -2,3 +2,4 @@ __pycache__/
 output/
 SETUP.md
 .venv/
+dump.rdb

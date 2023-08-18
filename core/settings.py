@@ -21,7 +21,10 @@ class Settings(BaseSettings):
     DB_PORT: int
     DB_NAME: str
     DATABASE_URL: str | None = None
-    CELERY_BROKER_URL: str = 'redis://localhost:6379/0'
+    REDIS_HOST: str
+    REDIS_PORT: int
+    REDIS_INSTANCE: str
+    CELERY_BROKER_URL: str | None = None
 
     model_config = SettingsConfigDict(env_file='.env')
 
@@ -29,8 +32,15 @@ class Settings(BaseSettings):
 def get_settings():
     """Returns settings configuration"""
     settings = Settings()
+
     DATABASE_URL = 'postgresql+psycopg2://{0}:{1}@{2}:{3}/{4}'.\
                     format(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME)
     setattr(settings, 'DATABASE_URL', DATABASE_URL)
     print(settings.DATABASE_URL)
+
+    CELERY_BROKER_URL: str = 'redis://{0}:{1}/{2}'.\
+        format(settings.REDIS_HOST, settings.REDIS_PORT, settings.REDIS_INSTANCE)
+    setattr(settings, 'CELERY_BROKER_URL', CELERY_BROKER_URL)
+    print(settings.CELERY_BROKER_URL)
+
     return settings
