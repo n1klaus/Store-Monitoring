@@ -4,9 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.v1.report_route import router
-from core.settings import get_settings
+from config import settings
 
-settings = get_settings()
 app = FastAPI()
 
 app.add_middleware(
@@ -29,19 +28,20 @@ def root() -> dict:
 if __name__ == "__main__":
     import uvicorn
 
+    SERVER: dict = {
+        "app": "main:app",
+        "host": settings.APP_HOST,
+        "port": settings.APP_PORT,
+    }
     if settings.DEV_MODE:
         uvicorn.run(
-            app="main:app",
-            host=settings.APP_HOST,
-            port=settings.APP_PORT,
+            **SERVER,
             reload=True,
             log_level="info",
         )
     else:
         uvicorn.run(
-            app="main:app",
-            host=settings.APP_HOST,
-            port=settings.APP_PORT,
+            **SERVER,
             workers=4,
             log_level="error",
         )
