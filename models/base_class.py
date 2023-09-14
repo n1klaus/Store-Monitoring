@@ -28,7 +28,7 @@ class Base:
 
     @declared_attr.directive
     def __tablename__(cls) -> str:
-        return f"{cls.__name__.lower()}s"
+        return cls.__name__.lower() + "s"
 
     id = Column(Integer, Sequence(name="base_id"), primary_key=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=func.now())
