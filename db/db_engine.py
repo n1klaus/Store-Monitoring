@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from functools import lru_cache
 from typing import Generator
 
 from sqlalchemy import create_engine
@@ -6,12 +7,20 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
-from core.settings import get_settings
-from models.base_class import Base
-
-settings = get_settings()
+from config import settings
+from models import Base
 
 SESSION_OPTIONS = {"autocommit": False, "autoflush": False, "expire_on_commit": False}
+
+
+@lru_cache()
+def get_db() -> Generator["DBEngine", None, None]:
+    """Returns a database instance"""
+    db: DBEngine = DBEngine()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 class DBEngine:
@@ -23,6 +32,7 @@ class DBEngine:
         self.Session = scoped_session(sessionmaker(bind=self.engine, **SESSION_OPTIONS))
         if settings.TEST_MODE:
             self.drop_tables()
+        self.create_tables()
 
     @property
     def session(self) -> Generator[scoped_session, None, None]:
@@ -33,7 +43,7 @@ class DBEngine:
         finally:
             session.close()
 
-    def reload(self) -> None:
+    def create_tables(self) -> None:
         """Creates new tables"""
         try:
             Base.metadata.create_all(bind=self.engine)
@@ -65,3 +75,9 @@ class DBEngine:
         """Returns object count in the database"""
         session = next(self.session)
         return session.query(obj).count()
+
+    def close(self):
+        """Closes the database connection"""
+        session = next(self.session)
+        session.close()
+        self.engine.dispose()
