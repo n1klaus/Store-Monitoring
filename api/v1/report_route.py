@@ -1,13 +1,14 @@
 #!/usr/bin/python3
+from pprint import pprint
+
 from celery import states
 from fastapi import APIRouter
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from db import db
+from config import celery
 from jobs.job_engine import generate_report_task
-from models.report import Report
 
 router = APIRouter()
 
@@ -25,17 +26,22 @@ RESPONSES = {
     200: {"description": "Id of the Item requested"},
 }
 
+RETRY_POLICY: dict = {
+    "interval_start": 0,
+    "interval_step": 0.2,
+    "interval_max": 0.2,
+    "max_retries": 5,
+}
+
 
 @router.post("/trigger_report", response_model=ReportItem, responses={**RESPONSES})
 def trigger_report():
-    """Returns the report_id of the generated report object in the database"""
+    """Returns the task id of the generated report task"""
     try:
-        report: Report = Report()
-        db.save(report)
-        report_id: str = str(report.report_id)
-        print("Created report", report)
-        generate_report_task.apply_async(args=[report_id])
-        return {"id": report_id}
+        report_task = generate_report_task.apply_async(
+            args=(), retry=True, retry_policy=RETRY_POLICY
+        )
+        return {"id": report_task.id}
     except BaseException:
         return JSONResponse(
             status_code=404, content={"message": "Report generation failed."}
