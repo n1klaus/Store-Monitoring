@@ -1,0 +1,4 @@
+ACL SETUSER redis_dev on >"redis_dev_pwd"
+ACL SETUSER redis_dev +@all +@admin -@dangerous +info
+CONFIG REWRITE
+AUTH redis_dev redis_dev_pwd
