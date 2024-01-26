@@ -13,5 +13,8 @@ settings = get_settings()
 def get_celery():
     """Returns celery instance"""
     celery: Celery = Celery("store_monitoring", include=["jobs.job_engine"])
-    celery.config_from_object(settings, force=True, namespace="CELERY")
-    return celery
+    try:
+        celery.config_from_object(settings, force=True, namespace="CELERY")
+        return celery
+    finally:
+        celery.close()

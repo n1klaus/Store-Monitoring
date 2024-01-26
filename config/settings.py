@@ -9,11 +9,14 @@ from pydantic_settings import SettingsConfigDict
 class Settings(BaseSettings):
     """Class to store app settings"""
 
-    DEV_MODE: bool = True
-    TEST_MODE: bool = True
-    DEBUG_MODE: bool = True
+    DEV_MODE: bool = False
+    TEST_MODE: bool = False
+    DEBUG_MODE: bool = False
     DEFAULT_TZ: str = "America/Chicago"
-    APP_HOST: str = "0.0.0.0"
+    APP_HOST: str | None = None
+    RABBITMQ_HOST: str | None = None
+    RABBITMQ_USERNAME: str
+    RABBITMQ_PASSWORD: str
     APP_PORT: int = 8000
     DB_USERNAME: str
     DB_PASSWORD: str
@@ -24,7 +27,7 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int
     REDIS_INSTANCE: str
-    CELERY_BROKER_URL: str = "amqp://guest:guest@127.0.0.1:5672"
+    CELERY_BROKER_URL: str | None = None
     result_backend: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
@@ -35,6 +38,7 @@ def get_settings():
     """Returns configuration settings"""
     settings: Settings = Settings()
 
+    # Configure Postgres Database
     DATABASE_URL = "postgresql+psycopg2://{0}:{1}@{2}:{3}/{4}".format(
         settings.DB_USERNAME,
         settings.DB_PASSWORD,
@@ -44,6 +48,13 @@ def get_settings():
     )
     setattr(settings, "DATABASE_URL", DATABASE_URL)
 
+    # Configure Celery RabbitMQ Server
+    CELERY_BROKER_URL = "amqp://{0}:{1}@{2}:5672".format(
+        settings.RABBITMQ_USERNAME, settings.RABBITMQ_PASSWORD, settings.RABBITMQ_HOST
+    )
+    setattr(settings, "CELERY_BROKER_URL", CELERY_BROKER_URL)
+
+    # Configure PostgreSQL as Celery Result Backend
     result_backend = "db+" + settings.DATABASE_URL
     setattr(settings, "result_backend", result_backend)
 
