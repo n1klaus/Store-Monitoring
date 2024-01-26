@@ -64,6 +64,12 @@ psql -h 127.0.0.1 -p 5432 -d store_dev_db -U store_dev -W
 psql "postgres://store_dev:store_dev_pwd@localhost:5432/store_dev_db"
 
 # CELERY
+## Check running celery worker nodes
+ps aux|grep 'celery worker'
+
+## Close any existing celery worker nodes
+pkill -f "celery worker"
+
 ## Start celery worker
 celery -A config.celery worker --loglevel=info
 
