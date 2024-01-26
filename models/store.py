@@ -15,10 +15,8 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import BOOLEAN
 from sqlalchemy.sql import func
 
-from core.settings import get_settings
+from config import settings
 from models.base_class import Base
-
-settings = get_settings()
 
 DEFAULT_TZ = str(pytz.timezone(settings.DEFAULT_TZ))
 
@@ -34,8 +32,6 @@ class StoreStatus(enum.Enum):
 
 class Store(Base):
     """Store Model"""
-
-    __tablename__ = "stores"
 
     store_id = Column(String, primary_key=True, unique=True)
     timestamp_utc = Column(DateTime(timezone=True), nullable=False, default=func.now())

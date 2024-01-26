@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     DEBUG_MODE: bool = True
     DEFAULT_TZ: str = "America/Chicago"
     APP_HOST: str = "0.0.0.0"
-    APP_PORT: str = 8000
+    APP_PORT: int = 8000
     DB_USERNAME: str
     DB_PASSWORD: str
     DB_HOST: str
@@ -24,15 +24,16 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int
     REDIS_INSTANCE: str
-    CELERY_BROKER_URL: str | None = None
+    CELERY_BROKER_URL: str = "amqp://guest:guest@127.0.0.1:5672"
+    result_backend: str | None = None
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 @lru_cache()
 def get_settings():
-    """Returns settings configuration"""
-    settings = Settings()
+    """Returns configuration settings"""
+    settings: Settings = Settings()
 
     DATABASE_URL = "postgresql+psycopg2://{0}:{1}@{2}:{3}/{4}".format(
         settings.DB_USERNAME,
@@ -42,12 +43,8 @@ def get_settings():
         settings.DB_NAME,
     )
     setattr(settings, "DATABASE_URL", DATABASE_URL)
-    print(settings.DATABASE_URL)
 
-    CELERY_BROKER_URL: str = "redis://{0}:{1}/{2}".format(
-        settings.REDIS_HOST, settings.REDIS_PORT, settings.REDIS_INSTANCE
-    )
-    setattr(settings, "CELERY_BROKER_URL", CELERY_BROKER_URL)
-    print(settings.CELERY_BROKER_URL)
+    result_backend = "db+" + settings.DATABASE_URL
+    setattr(settings, "result_backend", result_backend)
 
     return settings

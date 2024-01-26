@@ -1,4 +1,4 @@
--- create database and user for development environment
+-- create postgresql database and user for development environment
 REASSIGN OWNED BY store_dev TO postgres;
 DROP OWNED BY store_dev;
 DROP USER IF EXISTS store_dev;

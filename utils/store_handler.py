@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from db import db
-from models.store import Store
+from models import Store
 from schemas.store import StoreView
 from utils.csv_handler import CSVHandler
 

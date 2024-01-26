@@ -12,8 +12,6 @@ from models.base_class import Base
 class Owner(Base):
     """Owner Model"""
 
-    __tablename__ = "owners"
-
     owner_id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)

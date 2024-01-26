@@ -3,3 +3,4 @@ output/
 SETUP.md
 .venv/
 dump.rdb
+.env.prod

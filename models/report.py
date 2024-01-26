@@ -13,10 +13,8 @@ from sqlalchemy import Time
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 
-from core.settings import get_settings
+from config import settings
 from models.base_class import Base
-
-settings = get_settings()
 
 
 class ReportStatus(enum.Enum):
@@ -32,11 +30,7 @@ class ReportStatus(enum.Enum):
 class Report(Base):
     """Report Model"""
 
-    __tablename__ = "reports"
-
-    report_id = Column(
-        UUID(as_uuid=False), primary_key=True, unique=True, default=uuid4
-    )
+    report_id = Column(UUID(as_uuid=False), unique=True)
     name = Column(String)
     reported_at = Column(DateTime(timezone=True), nullable=False, default=func.now())
     uptime_last_hour = Column(Time)
@@ -45,7 +39,7 @@ class Report(Base):
     downtime_last_hour = Column(Time)
     downtime_last_day = Column(Time)
     downtime_last_week = Column(Time)
-    store_id = Column(Integer, ForeignKey("stores.store_id"))
+    store_id = Column(String, ForeignKey("stores.store_id"))
     report_status = Column(
         Enum(ReportStatus, name="report_status"),
         nullable=False,

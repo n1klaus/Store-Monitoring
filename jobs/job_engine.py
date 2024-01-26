@@ -1,30 +1,19 @@
 #!/usr/bin/python3
 from pathlib import Path
 
-from celery import Celery
-
-from core.settings import get_settings
-from models.store import Store
+from config import celery
+from db import db
+from models import Store
 from utils.csv_handler import CSVHandler
-
-settings = get_settings()
 
 OUTPUT_PATH = Path("../output/")
 
-CELERY_RESULT_BACKEND = "db+" + settings.DATABASE_URL
 
-celery = Celery(
-    "tasks", broker=settings.CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND
-)
-
-
-@celery.task(bind=True)
-def generate_report_task(self, report_id):
+@celery.task(bind=True, name="report_task")
+def generate_report_task(self):
     print("here!!")
     try:
-        from db import db
-
-        session = next(db.session)
+        session = next(next(db).session)
 
         # Fetch the required data from the database using SQLAlchemy
         stores = session.query(Store).all()
@@ -34,7 +23,7 @@ def generate_report_task(self, report_id):
         print("Report Data: ", report_data)
 
         # Write the generated report to a CSV file
-        report_filename = OUTPUT_PATH.joinpath(f"report_{report_id}.csv")
+        report_filename = OUTPUT_PATH.joinpath(f"report_{self.id}.csv")
         print("Report Filename: ", report_filename)
         CSVHandler.generate_report(report_data, report_filename)
 
