@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = "amqp://guest:guest@127.0.0.1:5672"
     result_backend: str | None = None
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 @lru_cache()

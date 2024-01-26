@@ -69,7 +69,7 @@ celery -A config.celery worker --loglevel=info
 
 # FASTAPI
 ## Start uvicorn server
-python main.py
+python3 main.py
 ```
 
 ## TESTING
